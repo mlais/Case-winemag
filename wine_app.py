@@ -9,7 +9,11 @@ df = pd.read_csv('winemag-data-130k-v2.csv')
 # Função para extrair o ano do título ou descrição
 def extract_year(title):
     match = re.search(r'\b(19|20)\d{2}\b', title)
-    return int(match.group(0)) if match else None
+    if match:
+        year = int(match.group(0))
+        if 1500 <= year <= 2099:  # Filtrar para anos de quatro dígitos dentro de um intervalo razoável
+            return year
+    return None
 
 # Aplicar a função para extrair o ano
 df['year'] = df['title'].apply(extract_year)
@@ -73,7 +77,7 @@ country_translation = {
 df['country_pt'] = df['country'].map(country_translation)
 
 # Título da aplicação
-st.title("Comparação de Preços de Vinhos por Variedade, Ano e País")
+st.title("Comparação de Preços de Vinhos por Variedade, Safra e País")
 
 # Seleção de País
 countries_pt = sorted(df['country_pt'].dropna().unique())
@@ -86,8 +90,8 @@ selected_country = {v: k for k, v in country_translation.items()}[selected_count
 df_filtered = df[df['country'] == selected_country]
 
 # Seleção de Ano
-years = sorted(df_filtered['year'].dropna().unique())
-selected_year = st.selectbox('Selecione o Ano', years)
+years = sorted(df_filtered['year'].dropna().unique().astype(int))
+selected_year = st.selectbox('Selecione a Safra', years)
 
 # Seleção de Variedades
 varieties = df_filtered['variety'].unique()
