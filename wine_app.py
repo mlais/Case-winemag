@@ -100,10 +100,14 @@ selected_varieties = st.multiselect('Selecione as Variedades', varieties, defaul
 # Filtrar o dataframe com base nos anos e nas variedades selecionadas
 filtered_df = df_filtered[(df_filtered['year'].isin(selected_years)) & (df_filtered['variety'].isin(selected_varieties))]
 
-# Criar o box plot
-fig = px.box(filtered_df, x='year', y='price', color='variety', 
-             title=f'Comparação de Preços para {selected_country_pt}',
-             labels={'price': 'Preço', 'year': 'Ano'})
+# Verificar se o dataframe filtrado está vazio e exibir uma mensagem de aviso se necessário
+if filtered_df.empty:
+    st.warning("Atenção! Não foi possível detectar a variedade ou safra selecionados.")
+else:
+    # Criar o box plot
+    fig = px.box(filtered_df, x='year', y='price', color='variety', 
+                 title=f'Comparação de Preços para {selected_country_pt}',
+                 labels={'price': 'Preço', 'year': 'Ano'})
 
-# Exibir o gráfico no Streamlit
-st.plotly_chart(fig)
+    # Exibir o gráfico no Streamlit
+    st.plotly_chart(fig)
