@@ -91,19 +91,19 @@ df_filtered = df[df['country'] == selected_country]
 
 # Seleção de Ano
 years = sorted(df_filtered['year'].dropna().unique().astype(int))
-selected_year = st.selectbox('Selecione a Safra', years)
+selected_years = st.multiselect('Selecione a Safra', years, default=[years[0]])
 
 # Seleção de Variedades
 varieties = df_filtered['variety'].unique()
 selected_varieties = st.multiselect('Selecione as Variedades', varieties, default=['Chardonnay', 'Pinot Noir'])
 
-# Filtrar o dataframe com base no ano e nas variedades selecionadas
-filtered_df = df_filtered[(df_filtered['year'] == selected_year) & (df_filtered['variety'].isin(selected_varieties))]
+# Filtrar o dataframe com base nos anos e nas variedades selecionadas
+filtered_df = df_filtered[(df_filtered['year'].isin(selected_years)) & (df_filtered['variety'].isin(selected_varieties))]
 
 # Criar o box plot
-fig = px.box(filtered_df, x='variety', y='price', color='variety', 
-             title=f'Comparação de Preços para {selected_year} no {selected_country_pt}',
-             labels={'price': 'Preço', 'variety': 'Variedade'})
+fig = px.box(filtered_df, x='year', y='price', color='variety', 
+             title=f'Comparação de Preços para {selected_country_pt}',
+             labels={'price': 'Preço', 'year': 'Ano'})
 
 # Exibir o gráfico no Streamlit
 st.plotly_chart(fig)
